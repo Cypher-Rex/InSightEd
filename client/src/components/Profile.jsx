@@ -19,7 +19,7 @@ const Profile = ({ userRole }) => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get('http://localhost:5000/me', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
         setProfile(response.data);
       } catch (err) {
@@ -38,7 +38,7 @@ const Profile = ({ userRole }) => {
     e.preventDefault();
     try {
       await axios.put('http://localhost:5000/profile', profile, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       alert('Profile updated successfully');
     } catch (err) {
@@ -54,7 +54,7 @@ const Profile = ({ userRole }) => {
         password: profile.password,
         newPassword: profile.newPassword,
       }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       alert('Password changed successfully');
     } catch (err) {
@@ -173,7 +173,7 @@ const Profile = ({ userRole }) => {
                 await axios.post('http://localhost:5000/upload-csv', formData, {
                   headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                   }
                 });
                 alert('CSV uploaded successfully');
