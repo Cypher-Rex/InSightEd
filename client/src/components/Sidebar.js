@@ -71,7 +71,7 @@ const Sidebar = ({ userRole }) => {
           <ListItemText primary="Home" />
         </SidebarItem>
 
-        {userRole !== "admin" && (
+        {userRole === "admin" && (
           <>
             <SidebarItem button onClick={() => handleNavigation("/complaints")}>
               <SidebarIcon><Report /></SidebarIcon>
@@ -115,7 +115,7 @@ const Sidebar = ({ userRole }) => {
           </>
         )}
 
-        {userRole === "admin" && (
+        {userRole !== "admin" && (
           <>
             <SidebarItem button onClick={() => handleNavigation("/admin")}>
               <SidebarIcon><AdminPanelSettings /></SidebarIcon>
