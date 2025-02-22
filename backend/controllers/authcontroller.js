@@ -47,6 +47,11 @@ exports.getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    // Format the date to dd-mm-yyyy
+    if (user.dob) {
+      const date = new Date(user.dob);
+      user.dob = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+    }
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: "Server error" });

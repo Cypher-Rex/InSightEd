@@ -29,8 +29,7 @@ const Profile = ({ userRole }) => {
         const profileData = res.data;
         if (profileData.dob) {
           const date = new Date(profileData.dob);
-          const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
-          profileData.dob = formattedDate; // Format the date to dd-mm-yyyy
+          profileData.dob = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
         }
         setProfile(profileData);
       } catch (err) {
