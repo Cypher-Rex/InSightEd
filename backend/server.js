@@ -1,103 +1,51 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
-const multer = require("multer");
 const fs = require("fs");
+const multer = require("multer");
+
+// Connect to MongoDB
+connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5001; // Changed port to 5001
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
 app.use(cors());
 
-// MongoDB Connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
-
-// Routes
-app.use("/auth", require("./routes/auth"));
-app.use("/budgets", require("./routes/budgets"));
-
-// Debug: Check if environment variables are loaded
-console.log("Email User:", process.env.EMAIL_USER);
-console.log("Email Pass:", process.env.EMAIL_PASS);
-
-// Ensure the "uploads" folder exists
+// Ensure the uploads directory exists
 const uploadDir = "uploads";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-// Configure multer for file uploads
+// Multer configuration (can be reused in controllers if needed)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // Save files in the "uploads" folder
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname); // Unique filename
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
-
 const upload = multer({ storage });
 
-// Configure Nodemailer using environment variables
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER, // Use environment variable for email
-    pass: process.env.EMAIL_PASS, // Use environment variable for password
-  },
-  debug: true, // Enable debugging for SMTP connection
-});
+// Routes
+app.use("/auth", require("./routes/auth"));
+app.use("/budgets", require("./routes/budgets"));
+app.use("/complaints", require("./routes/complaints"));
+app.use("/events", require("./routes/events"));
+app.use("/sponsorships", require("./routes/sponsorships"));
+app.use("/facility-requests", require("./routes/facilityRequests"));
+app.use("/uploads", require("./routes/uploads"));
+app.use("/user", require("./routes/user")); // e.g., for profile, change password, etc.
 
-// API endpoint to send email
-app.post("/api/send-email", upload.single("file"), (req, res) => {
-  const { studentName, ucid, sickDays, feedback, coordinatorId } = req.body;
-  const file = req.file; // Uploaded file
+// Other routes such as email sending can be similarly modularized into a dedicated controller and route.
+// For instance:
+app.post("/api/send-email", upload.single("file"), require("./controllers/uploadController").sendEmail);
 
-  // Check if all required fields are present
-  if (!studentName || !ucid || !sickDays || !feedback || !coordinatorId) {
-    return res.status(400).send("Missing required fields.");
-  }
-
-  // Email content
-  const mailOptions = {
-    from: process.env.EMAIL_USER, // Use environment variable for sender email
-    to: coordinatorId, // Recipient email (use the provided coordinatorId)
-    subject: `Health Report for ${studentName}`,
-    text: `
-      Student Name: ${studentName}
-      UCID: ${ucid}
-      Sick Days: ${sickDays}
-      Feedback: ${feedback}
-    `,
-    attachments: file
-      ? [
-          {
-            filename: file.originalname,
-            path: file.path, // Attach the uploaded file
-          },
-        ]
-      : [], // No attachments if no file is uploaded
-  };
-
-  // Send email
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-      return res.status(500).send(`Error sending email: ${error.message}`);
-    }
-    console.log("Email sent:", info.response);
-    res.status(200).send("Email sent: " + info.response);
-  });
-});
-
-// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

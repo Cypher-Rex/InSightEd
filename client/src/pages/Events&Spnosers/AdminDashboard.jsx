@@ -4,7 +4,7 @@ import ApplicationCard from '../../components/ApplicationCard';
 import Sidebar from "../../components/Sidebar";
 import axios from 'axios';
 
-const AdminDashboard = () => {
+const AdminDash = () => {
   const [applications, setApplications] = useState([]);
   const [page, setPage] = useState(1);
   const [filterType, setFilterType] = useState('all');
@@ -17,6 +17,10 @@ const AdminDashboard = () => {
         const response = await axios.get('http://localhost:5000/events', {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
+        // If your API response is an array, then:
+        // setApplications(response.data);
+        // Otherwise, if it's an object like { events: [...] }:
+        // setApplications(response.data.events);
         setApplications(response.data);
       } catch (err) {
         console.error(err);
@@ -44,7 +48,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const filteredApplications = applications.filter(application => {
+  const filteredApplications = (Array.isArray(applications) ? applications : []).filter(application => {
     return (filterType === 'all' || application.type === filterType) &&
            (filterPriority === 'all' || application.priority === filterPriority) &&
            (!filterDate || new Date(application.date).toDateString() === new Date(filterDate).toDateString());
@@ -80,9 +84,7 @@ const AdminDashboard = () => {
           value={filterDate}
           onChange={(e) => setFilterDate(e.target.value)}
           sx={{ mr: 2 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
+          InputLabelProps={{ shrink: true }}
         />
         <Pagination count={Math.ceil(filteredApplications.length / 10)} page={page} onChange={handlePageChange} sx={{ mt: 2 }} />
         {paginatedApplications.map((application) => (
@@ -97,4 +99,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default AdminDash;
