@@ -98,9 +98,9 @@ const Sidebar = ({ userRole }) => {
               <ListItemText primary="Events & Sponsors" />
             </SidebarItem>
 
-            <SidebarItem button onClick={() => handleNavigation("/contact")}>
+            <SidebarItem button onClick={() => handleNavigation("/health-form")}>
               <SidebarIcon><ContactMail /></SidebarIcon>
-              <ListItemText primary="Contact" />
+              <ListItemText primary="Health Authority" />
             </SidebarItem>
 
             <SidebarItem button onClick={() => handleNavigation("/feedback")}>

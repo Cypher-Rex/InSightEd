@@ -3,7 +3,6 @@ import { Box, Typography, Pagination } from '@mui/material';
 import BudgetForm from '../../components/BudgetForm';
 import BudgetCard from '../../components/BudgetCard';
 import BudgetPopup from '../../components/BudgetPopup';
-import Sidebar from "../../components/Sidebar";
 import axios from 'axios';
 
 const StudentBudget = () => {
@@ -28,12 +27,14 @@ const StudentBudget = () => {
 
   const handleSubmit = async (formData) => {
     try {
+      console.log("Submitting budget data:", formData); // Debugging statement
       const response = await axios.post('http://localhost:5000/budgets', formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
+      console.log("Budget created:", response.data); // Debugging statement
       setBudgets([...budgets, response.data]);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to create budget:", err); // Debugging statement
     }
   };
 

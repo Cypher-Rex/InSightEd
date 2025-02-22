@@ -14,6 +14,7 @@ import AdminBudget from "./pages/Budget/AdminBudget";
 import StudentBudget from "./pages/Budget/StudentBudget";
 import AdminDashboardES from "./pages/Events&Spnosers/AdminDashboard";
 import StudentDashboard from "./pages/Events&Spnosers/StudentDashboard";
+import HealthForm from './pages/health/healthform';
 
 const App = () => {
   const userRole = localStorage.getItem('role');
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/student-budget" element={<Layout userRole={userRole}><StudentBudget /></Layout>} />
         <Route path="/admin-dashboard-es" element={<Layout userRole={userRole}><AdminDashboardES /></Layout>} />
         <Route path="/student-dashboard" element={<Layout userRole={userRole}><StudentDashboard /></Layout>} />
+        <Route path="/health-form" element={<Layout userRole={userRole}><HealthForm /></Layout>} />
       </Routes>
     </Router>
   );

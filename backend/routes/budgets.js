@@ -9,10 +9,13 @@ router.post("/", auth, async (req, res) => {
   const { studentEmail, eventName, eventBudget, eventFundsExpense, eventBudgetProof, messBudgetProof } = req.body;
   
   try {
+    console.log("Received budget data:", req.body); // Debugging statement
     const budget = new Budget({ studentEmail, eventName, eventBudget, eventFundsExpense, eventBudgetProof, messBudgetProof });
     await budget.save();
+    console.log("Budget saved:", budget); // Debugging statement
     res.status(201).json(budget);
   } catch (err) {
+    console.error("Failed to create budget:", err); // Debugging statement
     res.status(500).json({ error: "Failed to create budget" });
   }
 });
