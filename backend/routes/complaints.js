@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const complaintController = require("../controllers/complaintController");
+const complaintController = require("../controllers/complaintcontroller");
 const auth = require("../middleware/auth");
 
 router.post("/", auth, complaintController.createComplaint);
