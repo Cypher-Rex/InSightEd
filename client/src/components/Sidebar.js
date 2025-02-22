@@ -1,17 +1,33 @@
 import { styled } from '@mui/material/styles';
-import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { 
+  List, 
+  ListItem, 
+  ListItemIcon, 
+  ListItemText,
+  Divider 
+} from '@mui/material';
 import {
-  Home, Person, Report, Dashboard, Settings, Info,
-  ContactMail, Feedback, Help, ExitToApp, AdminPanelSettings
+  Home,
+  Person,
+  Report,
+  Dashboard,
+  Settings,
+  ContactMail,
+  Feedback,
+  Help,
+  ExitToApp,
+  AdminPanelSettings,
+  Event,
+  MedicalServices,
+  School
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-// Styled Sidebar Container with Animation
+// Styled Components
 const SidebarContainer = styled('div')(({ theme }) => ({
   width: '250px',
   height: '100vh',
-  backgroundColor: '#1E1E2F', // Dark blue-gray shade
+  backgroundColor: '#1E1E2F',
   color: '#fff',
   paddingTop: '20px',
   transition: 'transform 0.3s ease-in-out',
@@ -21,139 +37,104 @@ const SidebarContainer = styled('div')(({ theme }) => ({
   top: 0,
   overflowY: 'auto',
   '&:hover': {
-    transform: 'scale(1.02)', // Slightly enlarges on hover
+    transform: 'scale(1.02)',
   }
 }));
 
-// Styled List Item with Hover Effects
 const SidebarItem = styled(ListItem)(({ theme }) => ({
   transition: '0.3s ease',
   '&:hover': {
-    backgroundColor: '#303050', // Darker shade on hover
+    backgroundColor: '#303050',
     transform: 'translateX(5px)',
+  },
+  '&.Mui-selected': {
+    backgroundColor: '#404070',
+    borderLeft: `4px solid ${theme.palette.primary.main}`
   }
 }));
 
-// Styled Icon with Animation
 const SidebarIcon = styled(ListItemIcon)(({ theme }) => ({
-  color: '#ffcc00', // Highlight color
+  color: '#ffcc00',
   transition: 'transform 0.3s ease',
   '&:hover': {
-    transform: 'scale(1.2)', // Slight zoom effect
+    transform: 'scale(1.2)',
   }
 }));
 
-const Sidebar = ({ userRole }) => {
+// Route Configuration
+const roleRoutes = {
+  admin: [
+    { path: '/admin/complaints', label: 'Complaints', icon: <Report /> },
+    { path: '/admin/facilities', label: 'Facilities', icon: <Dashboard /> },
+    { path: '/admin/budget', label: 'Budget', icon: <Settings /> },
+  ],
+  student: [
+    { path: '/student/complaints', label: 'File Complaint', icon: <Report /> },
+    { path: '/student/health', label: 'Health Services', icon: <MedicalServices /> },
+    { path: '/student/courses', label: 'Courses', icon: <School /> },
+  ],
+  authority: [
+    { path: '/authority/exam', label: 'Exam Monitoring', icon: <AdminPanelSettings /> },
+    { path: '/authority/events', label: 'Event Management', icon: <Event /> },
+    { path: '/authority/feedback', label: 'Feedback', icon: <Feedback /> },
+  ]
+};
+
+const commonRoutes = [
+  { path: '/home', label: 'Home', icon: <Home /> },
+  { path: '/profile', label: 'Profile', icon: <Person /> },
+  { path: '/settings', label: 'Settings', icon: <Settings /> },
+  { path: '/help', label: 'Help', icon: <Help /> },
+];
+
+const Sidebar = ({ userRole = 'student' }) => {
   const navigate = useNavigate();
-  const [activePage, setActivePage] = useState('');
+  const location = useLocation();
 
   const handleNavigation = (path) => {
-    setActivePage(path);
     navigate(path);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    navigate("/"); // Redirect to login after logout
+    navigate("/");
   };
 
   return (
     <SidebarContainer>
       <List>
-        <SidebarItem button onClick={() => handleNavigation("/profile")} selected={activePage === "/profile"}>
-          <SidebarIcon><Person /></SidebarIcon>
-          <ListItemText primary="Profile" />
-        </SidebarItem>
+        {/* Common Routes */}
+        {commonRoutes.map((route) => (
+          <SidebarItem 
+            key={route.path}
+            button 
+            onClick={() => handleNavigation(route.path)}
+            selected={location.pathname === route.path}
+          >
+            <SidebarIcon>{route.icon}</SidebarIcon>
+            <ListItemText primary={route.label} />
+          </SidebarItem>
+        ))}
 
-        <SidebarItem button onClick={() => handleNavigation("/home")} selected={activePage === "/home"}>
-          <SidebarIcon><Home /></SidebarIcon>
-          <ListItemText primary="Home" />
-        </SidebarItem>
+        <Divider sx={{ backgroundColor: '#404060', my: 2 }} />
 
-        {userRole === "admin" && (
-          <>
-            <SidebarItem button onClick={() => handleNavigation("/complaints")}>
-              <SidebarIcon><Report /></SidebarIcon>
-              <ListItemText primary="Complaints" />
-            </SidebarItem>
+        {/* Role-Specific Routes */}
+        {roleRoutes[userRole]?.map((route) => (
+          <SidebarItem 
+            key={route.path}
+            button 
+            onClick={() => handleNavigation(route.path)}
+            selected={location.pathname.startsWith(route.path)}
+          >
+            <SidebarIcon>{route.icon}</SidebarIcon>
+            <ListItemText primary={route.label} />
+          </SidebarItem>
+        ))}
 
-            <SidebarItem button onClick={() => handleNavigation("/student-form")}>
-              <SidebarIcon><Report /></SidebarIcon>
-              <ListItemText primary="Facilities" />
-            </SidebarItem>
+        <Divider sx={{ backgroundColor: '#404060', my: 2 }} />
 
-            <SidebarItem button onClick={() => handleNavigation("/student")}>
-              <SidebarIcon><Dashboard /></SidebarIcon>
-              <ListItemText primary="Exam Violations" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/student-budget")}>
-              <SidebarIcon><Settings /></SidebarIcon>
-              <ListItemText primary="Budget" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/student-dashboard")}>
-              <SidebarIcon><Info /></SidebarIcon>
-              <ListItemText primary="Events & Sponsors" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/health-form")}>
-              <SidebarIcon><ContactMail /></SidebarIcon>
-              <ListItemText primary="Health Authority" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/feedback")}>
-              <SidebarIcon><Feedback /></SidebarIcon>
-              <ListItemText primary="Feedback" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/help")}>
-              <SidebarIcon><Help /></SidebarIcon>
-              <ListItemText primary="Help" />
-            </SidebarItem>
-          </>
-        )}
-
-        {userRole !== "admin" && (
-          <>
-            <SidebarItem button onClick={() => handleNavigation("/admin")}>
-              <SidebarIcon><AdminPanelSettings /></SidebarIcon>
-              <ListItemText primary="Complaint Authority" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/admin-dashboard")}>
-              <SidebarIcon><AdminPanelSettings /></SidebarIcon>
-              <ListItemText primary="Facility Authority" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/authority")}>
-              <SidebarIcon><Report /></SidebarIcon>
-              <ListItemText primary="Exam Authority" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/admin-budget")}>
-              <SidebarIcon><Settings /></SidebarIcon>
-              <ListItemText primary="Budget" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/admin-dashboard-es")}>
-              <SidebarIcon><ContactMail /></SidebarIcon>
-              <ListItemText primary="Events & Sponsors" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/admin-feedback")}>
-              <SidebarIcon><Feedback /></SidebarIcon>
-              <ListItemText primary="Feedback" />
-            </SidebarItem>
-
-            <SidebarItem button onClick={() => handleNavigation("/admin-help")}>
-              <SidebarIcon><Help /></SidebarIcon>
-              <ListItemText primary="Help" />
-            </SidebarItem>
-          </>
-        )}
-
+        {/* Logout */}
         <SidebarItem button onClick={handleLogout}>
           <SidebarIcon><ExitToApp /></SidebarIcon>
           <ListItemText primary="Logout" />
