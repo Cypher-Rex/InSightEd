@@ -98,11 +98,8 @@ const Sidebar = ({ userRole = 'student' }) => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-<<<<<<< Updated upstream
+
     navigate("/");
-=======
-    navigate("/login");
->>>>>>> Stashed changes
   };
 
   return (

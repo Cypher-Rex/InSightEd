@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
+const auth = require("../middleware/authMiddleware");
 
 // For clarity, we define controller functions inline. 
 // In a production app, you may want to extract these to controllers/facilityRequestController.js

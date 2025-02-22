@@ -1,20 +1,6 @@
-import { useState, useEffect } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Paper, 
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormLabel,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel 
-} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Box, Typography, Paper, TextField, Button, Divider, FormControl, InputLabel, Select, MenuItem, FormControlLabel, RadioGroup, Radio, FormLabel } from '@mui/material';
 
 const Profile = ({ userRole }) => {
   const [profile, setProfile] = useState({
@@ -28,18 +14,25 @@ const Profile = ({ userRole }) => {
     class: '',
     classCoordinatorName: '',
     classCoordinatorEmail: '',
-    parentsEmail: '',
-    password: '',
-    newPassword: '',
+    parentsEmail: ''
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/me', {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        const res = await axios.get('http://localhost:5000/auth/me', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
         });
-        setProfile(response.data);
+        const profileData = res.data;
+        if (profileData.dob) {
+          const date = new Date(profileData.dob);
+          const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+          profileData.dob = formattedDate; // Format the date to dd-mm-yyyy
+        }
+        setProfile(profileData);
       } catch (err) {
         console.error(err);
       }
@@ -48,8 +41,49 @@ const Profile = ({ userRole }) => {
     fetchProfile();
   }, []);
 
+  const validatePhone = (phone) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateCollegeEmail = (email) => {
+    const collegeEmailRegex = /^[^\s@]+@college\.edu$/;
+    return collegeEmailRegex.test(email);
+  };
+
+  const validateDate = (date) => {
+    return !isNaN(Date.parse(date));
+  };
+
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProfile({ ...profile, [name]: value });
+
+    // Validate fields on change
+    switch (name) {
+      case 'classCoordinatorEmail':
+        setErrors({ ...errors, classCoordinatorEmail: !validateCollegeEmail(value) });
+        break;
+      case 'parentsEmail':
+        setErrors({ ...errors, parentsEmail: !validateEmail(value) });
+        break;
+      case 'hostelEmail':
+        setErrors({ ...errors, hostelEmail: !validateEmail(value) });
+        break;
+      case 'phone':
+        setErrors({ ...errors, phone: !validatePhone(value) });
+        break;
+      case 'dob':
+        setErrors({ ...errors, dob: !validateDate(value) });
+        break;
+      default:
+        break;
+    }
   };
 
   const handleHostelChange = (e) => {
@@ -58,8 +92,16 @@ const Profile = ({ userRole }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check for validation errors
+    if (Object.values(errors).some((error) => error)) {
+      alert('Please fix the validation errors before submitting.');
+      return;
+    }
+
     try {
-      await axios.put('http://localhost:5000/profile', profile, {
+      const { name, email, ...updateData } = profile;
+      await axios.put('http://localhost:5000/auth/profilepage', updateData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       alert('Profile updated successfully');
@@ -69,29 +111,13 @@ const Profile = ({ userRole }) => {
     }
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.put('http://localhost:5000/change-password', {
-        password: profile.password,
-        newPassword: profile.newPassword,
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
-      alert('Password changed successfully');
-    } catch (err) {
-      console.error(err);
-      alert('Failed to change password');
-    }
-  };
-
   return (
     <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
       <Typography variant="h4" gutterBottom>Profile</Typography>
-      
-      {/* Profile Update Section */}
       <Paper sx={{ p: 3 }}>
         <form onSubmit={handleSubmit}>
+          {/* Personal Information Section */}
+          <Typography variant="h6" gutterBottom>Personal Information</Typography>
           <TextField
             label="Name"
             name="name"
@@ -100,7 +126,6 @@ const Profile = ({ userRole }) => {
             margin="normal"
             InputProps={{ readOnly: true }}
           />
-
           <TextField
             label="Email"
             name="email"
@@ -109,7 +134,6 @@ const Profile = ({ userRole }) => {
             margin="normal"
             InputProps={{ readOnly: true }}
           />
-
           <FormControl fullWidth margin="normal">
             <InputLabel>Gender</InputLabel>
             <Select
@@ -123,7 +147,6 @@ const Profile = ({ userRole }) => {
               <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
-
           <TextField
             label="Phone Number"
             name="phone"
@@ -131,20 +154,76 @@ const Profile = ({ userRole }) => {
             onChange={handleChange}
             fullWidth
             margin="normal"
-            inputProps={{ pattern: "[0-9]{10}" }}
+            error={errors.phone}
+            helperText={errors.phone ? 'Phone number must be 10 digits' : ''}
           />
-
           <TextField
             label="Date of Birth"
-            type="date"
             name="dob"
+            type="text"
             value={profile.dob}
             onChange={handleChange}
             fullWidth
             margin="normal"
             InputLabelProps={{ shrink: true }}
+            error={errors.dob}
+            helperText={errors.dob ? 'Invalid date' : ''}
           />
 
+          <Divider sx={{ my: 3 }} />
+
+          {/* Academic Information Section (Visible only to non-admin users) */}
+          {userRole !== 'admin' && (
+            <>
+              <Typography variant="h6" gutterBottom>Academic Information</Typography>
+              <TextField
+                label="Class"
+                name="class"
+                value={profile.class}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Class Coordinator Name"
+                name="classCoordinatorName"
+                value={profile.classCoordinatorName}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Class Coordinator Email"
+                name="classCoordinatorEmail"
+                value={profile.classCoordinatorEmail}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+                error={errors.classCoordinatorEmail}
+                helperText={errors.classCoordinatorEmail ? 'Email must be in the format abc@college.edu' : ''}
+              />
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Parent/Guardian Information Section (Visible only to non-admin users) */}
+              <Typography variant="h6" gutterBottom>Parent/Guardian Information</Typography>
+              <TextField
+                label="Parents Email"
+                name="parentsEmail"
+                value={profile.parentsEmail}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+                error={errors.parentsEmail}
+                helperText={errors.parentsEmail ? 'Invalid email format' : ''}
+              />
+            </>
+          )}
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Accommodation Information Section */}
+          <Typography variant="h6" gutterBottom>Accommodation Information</Typography>
           <FormControl component="fieldset" fullWidth margin="normal">
             <FormLabel component="legend">Accommodation Type</FormLabel>
             <RadioGroup
@@ -157,7 +236,6 @@ const Profile = ({ userRole }) => {
               <FormControlLabel value="false" control={<Radio />} label="Day Scholar" />
             </RadioGroup>
           </FormControl>
-
           {profile.isHosteler && (
             <TextField
               label="Hostel Email"
@@ -166,55 +244,16 @@ const Profile = ({ userRole }) => {
               onChange={handleChange}
               fullWidth
               margin="normal"
-              type="email"
+              error={errors.hostelEmail}
+              helperText={errors.hostelEmail ? 'Invalid email format' : ''}
             />
           )}
 
-          <TextField
-            label="Class"
-            name="class"
-            value={profile.class}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-
-          <TextField
-            label="Class Coordinator Name"
-            name="classCoordinatorName"
-            value={profile.classCoordinatorName}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-
-          <TextField
-            label="Class Coordinator Email"
-            name="classCoordinatorEmail"
-            value={profile.classCoordinatorEmail}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            type="email"
-          />
-
-          <TextField
-            label="Parents Email"
-            name="parentsEmail"
-            value={profile.parentsEmail}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            type="email"
-          />
-
-          <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+          <Button type="submit" variant="contained" color="primary" sx={{ mt: 3 }}>
             Update Profile
           </Button>
         </form>
       </Paper>
-
-      {/* Admin CSV Upload Section */}
       {userRole === 'admin' && (
         <Paper sx={{ p: 3, mt: 4 }}>
           <Typography variant="h6" gutterBottom>Upload CSV</Typography>
@@ -222,10 +261,9 @@ const Profile = ({ userRole }) => {
             type="file"
             accept=".csv"
             onChange={async (e) => {
-              const file = e.target.files[0];
-              const formData = new FormData();
-              formData.append('file', file);
               try {
+                const formData = new FormData();
+                formData.append('file', e.target.files[0]);
                 await axios.post('http://localhost:5000/upload-csv', formData, {
                   headers: {
                     'Content-Type': 'multipart/form-data',
