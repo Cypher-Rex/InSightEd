@@ -74,77 +74,126 @@ const HealthForm = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">College Doctor Portal</h1>
-      <form onSubmit={handleSubmit} className="card p-4 shadow">
-        <div className="mb-3">
-          <label className="form-label">Student Name:</label>
+    <div style={styles.container}>
+      <h1 style={styles.header}>College Doctor Portal</h1>
+      <form onSubmit={handleSubmit} style={styles.form}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Student Name:</label>
           <input
             type="text"
             name="studentName"
             value={formData.studentName}
             onChange={handleChange}
-            className="form-control"
+            style={styles.input}
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">UCID:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>UCID:</label>
           <input
             type="text"
             name="ucid"
             value={formData.ucid}
             onChange={handleChange}
-            className="form-control"
+            style={styles.input}
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Number of Sick Days:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Number of Sick Days:</label>
           <input
             type="number"
             name="sickDays"
             value={formData.sickDays}
             onChange={handleChange}
-            className="form-control"
+            style={styles.input}
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Feedback:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Feedback:</label>
           <textarea
             name="feedback"
             value={formData.feedback}
             onChange={handleChange}
-            className="form-control"
+            style={styles.textarea}
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Class Coordinator ID:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Class Coordinator ID:</label>
           <input
             type="text"
             name="coordinatorId"
             value={formData.coordinatorId}
             onChange={handleChange}
-            className="form-control"
+            style={styles.input}
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Upload Report (PDF/Image):</label>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="form-control"
-          />
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Upload Report (PDF/Image):</label>
+          <input type="file" onChange={handleFileChange} style={styles.input} />
         </div>
-        <button type="submit" className="btn btn-primary w-100">
+        <button type="submit" style={styles.button}>
           Submit
         </button>
       </form>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    maxWidth: "600px",
+    margin: "0 auto",
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+  },
+  header: {
+    textAlign: "center",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  formGroup: {
+    marginBottom: "15px",
+  },
+  label: {
+    marginBottom: "5px",
+    fontWeight: "bold",
+    color: "#555",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+  },
+  textarea: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+    resize: "vertical",
+  },
+  button: {
+    padding: "10px 20px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
 };
 
 export default HealthForm;
