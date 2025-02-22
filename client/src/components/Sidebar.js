@@ -84,7 +84,6 @@ const commonRoutes = [
   { path: '/home', label: 'Home', icon: <Home /> },
   { path: '/profile', label: 'Profile', icon: <Person /> },
   { path: '/settings', label: 'Settings', icon: <Settings /> },
-  { path: '/help', label: 'Help', icon: <Help /> },
 ];
 
 const Sidebar = ({ userRole = 'student' }) => {
