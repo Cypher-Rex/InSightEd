@@ -1,13 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const FacilityRequestSchema = new mongoose.Schema({
-  activity: { type: String, required: true },
-  numStudents: { type: Number, required: true },
-  time: { type: String, required: true },
-  date: { type: Date, required: true },
-  status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  createdAt: { type: Date, default: Date.now },
+const facilitySchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  maxCapacity: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("FacilityRequest", FacilityRequestSchema);
+module.exports = mongoose.model("Facility", facilitySchema);

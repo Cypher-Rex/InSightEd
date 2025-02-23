@@ -41,10 +41,14 @@ app.use("/sponsorships", require("./routes/sponsorships"));
 app.use("/facility-requests", require("./routes/facility"));
 app.use("/uploads", require("./routes/upload"));
 app.use("/user", require("./routes/user")); // e.g., for profile, change password, etc.
-
+app.use("/api", require("./routes/bookingRoutes"));
 // Other routes such as email sending can be similarly modularized into a dedicated controller and route.
 // For instance:
-app.post("/api/send-email", upload.single("file"), require("./controllers/uploadController").sendEmail);
+app.post(
+  "/api/send-email",
+  upload.single("file"),
+  require("./controllers/uploadController").sendEmail
+);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
