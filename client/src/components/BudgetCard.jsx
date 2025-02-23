@@ -1,14 +1,14 @@
 import { Card, CardContent, Typography, Button } from '@mui/material';
 
-const BudgetCard = ({ budget, onClick }) => {
+const BudgetCard = ({ application, onClick }) => {
   return (
-    <Card sx={{ mb: 2, boxShadow: 3 }}>
+    <Card onClick={onClick} sx={{ cursor: 'pointer' }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom>{budget.eventName}</Typography>
-        <Typography variant="body2">Student Email: {budget.studentEmail}</Typography>
-        <Typography variant="body2">Event Budget: ₹{budget.eventBudget}</Typography>
-        <Typography variant="body2">Event Funds Expense: ₹{budget.eventFundsExpense}</Typography>
-        <Button variant="contained" color="primary" onClick={onClick} sx={{ mt: 2 }}>View Details</Button>
+        <Typography variant="h6">{application.name}</Typography>
+        <Typography color="text.secondary">{application.type}</Typography>
+        <Typography><strong>Budget:</strong> {application.budget?.budgetAmount || 'Not set'}</Typography>
+        <Typography><strong>Expenses:</strong> {application.budget?.expenses || 0}</Typography>
+        <Typography><strong>Remaining:</strong> {application.budget ? application.budget.budgetAmount - application.budget.expenses : 'N/A'}</Typography>
       </CardContent>
     </Card>
   );
