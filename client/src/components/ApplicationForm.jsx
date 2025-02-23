@@ -1,37 +1,120 @@
 import { useState } from 'react';
-import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box } from '@mui/material';
+import { Box, TextField, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
-const ApplicationForm = ({ onSubmit }) => {
+const ApplicationForm = ({ open, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    type: '',
-    title: '',
+    name: '',
+    email: '',
+    phoneNo: '',
+    eventType: '',
+    date: '',
+    budget: '',
     description: '',
+    file: null,
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, file: e.target.files[0] });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({ type: '', title: '', description: '' }); // Clear form after submission
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+    onSubmit(data);
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500, margin: 'auto', mt: 4 }}>
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Application Type</InputLabel>
-        <Select name="type" value={formData.type} onChange={handleChange} required>
-          <MenuItem value="event">Event Organization</MenuItem>
-          <MenuItem value="budget">Budget Approval</MenuItem>
-          <MenuItem value="sponsorship">Sponsorship</MenuItem>
-        </Select>
-      </FormControl>
-      <TextField fullWidth margin="normal" label="Title" name="title" value={formData.title} onChange={handleChange} required />
-      <TextField fullWidth margin="normal" label="Description" name="description" value={formData.description} onChange={handleChange} multiline rows={4} required />
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>Submit</Button>
-    </Box>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>New Application</DialogTitle>
+      <DialogContent>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+          <TextField
+            fullWidth
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Phone Number"
+            name="phoneNo"
+            value={formData.phoneNo}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Event/Sick Leave"
+            name="eventType"
+            value={formData.eventType}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Date"
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleChange}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+            required
+          />
+          <TextField
+            fullWidth
+            label="Budget"
+            name="budget"
+            value={formData.budget}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <Button variant="contained" component="label" sx={{ mt: 2 }}>
+            Upload File
+            <input type="file" hidden onChange={handleFileChange} />
+          </Button>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            {formData.file ? formData.file.name : 'No file selected'}
+          </Typography>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleSubmit} variant="contained">Submit</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
