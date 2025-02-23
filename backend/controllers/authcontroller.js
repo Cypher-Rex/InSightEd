@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Your original register function
 exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -17,12 +18,18 @@ exports.register = async (req, res) => {
 
     const payload = { id: user.id, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // New: Add refresh token
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+
     res.status(201).json({ token });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
+// Your original login function
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -35,12 +42,18 @@ exports.login = async (req, res) => {
 
     const payload = { id: user.id, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // New: Add refresh token
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
+// Your original getProfile function
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -58,6 +71,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
+// Your original updateProfile function
 exports.updateProfile = async (req, res) => {
   try {
     const { name, email, ...updateData } = req.body;
@@ -68,5 +82,23 @@ exports.updateProfile = async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// New: Add refreshToken function
+exports.refreshToken = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'No refresh token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const payload = { id: decoded.id, role: decoded.role };
+    const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Issue a new access token
+    res.json({ token: newToken });
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid refresh token' });
   }
 };

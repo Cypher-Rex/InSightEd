@@ -1,72 +1,84 @@
-import { useState } from "react";
-import { Modal, Box, TextField, Button, Typography } from "@mui/material";
+import React, { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import axios from 'axios';
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+const categories = ['Sports', 'Drama', 'Teaching', 'Other'];
 
-function ComplaintForm({ open, onClose }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+const ComplaintForm = ({ open, onClose }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [revealIdentity, setRevealIdentity] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/complaints", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Ensure token is in Bearer format
-        },
-        body: JSON.stringify({ title, description }),
+      await axios.post('http://localhost:5000/', {
+        title,
+        description,
+        category,
+        revealIdentity,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create complaint");
-      }
-
       onClose();
-      window.location.reload();
     } catch (err) {
-      console.error(err);
+      console.error('Failed to submit complaint:', err);
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={style}>
-        <Typography variant="h6" gutterBottom>
-          New Complaint
-        </Typography>
-        <TextField
-          label="Title"
-          fullWidth
-          margin="normal"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <TextField
-          label="Description"
-          fullWidth
-          multiline
-          rows={4}
-          margin="normal"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <Button variant="contained" onClick={handleSubmit}>
-          Submit
-        </Button>
-      </Box>
-    </Modal>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>New Complaint</DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={4}
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((cat) => (
+                <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={revealIdentity}
+                onChange={(e) => setRevealIdentity(e.target.checked)}
+              />
+            }
+            label="Reveal Identity"
+          />
+          <DialogActions>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button type="submit" variant="contained" color="primary">Submit</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
-}
+};
 
 export default ComplaintForm;

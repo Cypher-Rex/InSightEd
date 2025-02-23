@@ -13,55 +13,56 @@ function ComplaintsPage() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      window.location.href = "/"; // Redirect to login if no token
+      console.error("No token found, redirecting to login...");
+      window.location.href = "/";
       return;
     }
 
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/me', {
+        // Fetch user data first
+        const userResponse = await fetch('http://localhost:5000/me', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+        if (!userResponse.ok) {
+          if (userResponse.status === 404) {
+            console.warn("/me endpoint not found, skipping user data fetch.");
+          } else {
+            throw new Error('Failed to fetch user data');
+          }
+        } else {
+          const userData = await userResponse.json();
+          console.log("User data fetched:", userData);
+          setIsAdmin(userData.role === "admin");
         }
 
-        const data = await response.json();
-        setIsAdmin(data.role === "admin");
-      } catch (err) {
-        console.error(err);
-        window.location.href = "/"; // Redirect to login on error
-      }
-    };
-
-    const fetchComplaints = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/complaints', {
+        // Proceed to fetch complaints
+        const complaintsResponse = await fetch('http://localhost:5000/complaints', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        if (!response.ok) {
+        if (!complaintsResponse.ok) {
           throw new Error('Failed to fetch complaints');
         }
 
-        const data = await response.json();
-        setComplaints(data);
+        const complaintsData = await complaintsResponse.json();
+        console.log("Complaints fetched:", complaintsData);
+        setComplaints(complaintsData);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
-    fetchComplaints();
+    fetchData();
   }, []);
 
   return (

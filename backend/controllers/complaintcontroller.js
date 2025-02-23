@@ -4,7 +4,7 @@ const User = require("../models/User");
 // Create Complaint
 exports.createComplaint = async (req, res) => {
   const { title, description } = req.body;
-  
+
   try {
     const complaint = new Complaint({
       title,
@@ -35,7 +35,7 @@ exports.updateComplaintStatus = async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ error: "Unauthorized" });
   }
-  
+
   const { status } = req.body;
   try {
     const complaint = await Complaint.findById(req.params.id);
@@ -53,14 +53,13 @@ exports.updateComplaintStatus = async (req, res) => {
 };
 
 // Vote for Identity Reveal (Admin Only)
-// This example assumes that you are tracking votes with `approveVotes` and `rejectVotes` arrays
 exports.voteForReveal = async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ error: "Unauthorized" });
   }
-  
+
   const { vote } = req.body; // Expected values: "approve" or "reject"
-  
+
   try {
     const complaint = await Complaint.findById(req.params.id);
     if (!complaint) {

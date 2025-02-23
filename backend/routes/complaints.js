@@ -1,11 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const complaintController = require("../controllers/complaintcontroller");
 const auth = require("../middleware/authMiddleware");
+const complaintController = require("../controllers/complaintcontroller");
 
+// Create a new complaint
 router.post("/", auth, complaintController.createComplaint);
+
+// Get all complaints
 router.get("/", auth, complaintController.getAllComplaints);
-router.put("/:id", auth, complaintController.updateComplaintStatus);
+
+// Update complaint status (Admin only)
+router.put("/:id/status", auth, complaintController.updateComplaintStatus);
+
+// Vote for identity reveal (Admin only)
 router.post("/:id/vote", auth, complaintController.voteForReveal);
 
 module.exports = router;
