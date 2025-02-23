@@ -15,7 +15,7 @@ const ComplaintForm = ({ open, onClose }) => {
     const token = localStorage.getItem('token');
 
     try {
-      await axios.post('http://localhost:5000/', {
+      await axios.post('http://localhost:5000/complaints/create', {
         title,
         description,
         category,

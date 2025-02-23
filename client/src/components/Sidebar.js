@@ -84,9 +84,10 @@ const commonRoutes = [
   { path: '/settings', label: 'Settings', icon: <Settings /> },
 ];
 
-const Sidebar = ({ userRole = 'student' }) => {
+const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const userRole = localStorage.getItem("role") || "user"; // Fetch role from localStorage or default to 'student'
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -95,7 +96,6 @@ const Sidebar = ({ userRole = 'student' }) => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-
     navigate("/");
   };
 

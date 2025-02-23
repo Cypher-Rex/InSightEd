@@ -26,8 +26,8 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Layout userRole={userRole}><HomePage userRole={userRole} /></Layout>} />
         <Route path="/profile" element={<Layout userRole={userRole}><ProfilePage userRole={userRole} /></Layout>} />
-        <Route path="/student/complaints" element={<Layout userRole={userRole}><ComplaintsPage /></Layout>} />
-        <Route path="/admin/complaints" element={<Layout userRole={userRole}><AdminPanel /></Layout>} />
+        <Route path="/complaints" element={<Layout userRole={userRole}><ComplaintsPage /></Layout>} />
+        <Route path="/admin" element={<Layout userRole={userRole}><AdminPanel /></Layout>} />
         <Route path="/authority" element={<Layout userRole={userRole}><AuthorityPage /></Layout>} />
         <Route path="/student" element={<Layout userRole={userRole}><StudentPage /></Layout>} />
         <Route path="/admin-dashboard" element={<Layout userRole={userRole}><AdminDashboard /></Layout>} />

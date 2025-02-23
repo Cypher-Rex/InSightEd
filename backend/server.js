@@ -35,7 +35,7 @@ const upload = multer({ storage });
 // Routes
 app.use("/auth", require("./routes/auth"));
 app.use("/budgets", require("./routes/budgets"));
-app.use("/api/complaints", complaintRoutes);
+app.use("/complaints", require("./routes/complaints")); // Corrected line
 app.use("/events", require("./routes/events"));
 app.use("/sponsorships", require("./routes/sponsorships"));
 app.use("/facility-requests", require("./routes/facility"));

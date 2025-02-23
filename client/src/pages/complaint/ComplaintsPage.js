@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Button, Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import Sidebar from '../../components/Sidebar';
 import ComplaintForm from './ComplaintForm';
+import axios from 'axios';
 
 function ComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
@@ -21,38 +22,34 @@ function ComplaintsPage() {
     const fetchData = async () => {
       try {
         // Fetch user data first
-        const userResponse = await fetch('http://localhost:5000/me', {
+        const userResponse = await axios.get('http://localhost:5000/me', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        if (!userResponse.ok) {
-          if (userResponse.status === 404) {
-            console.warn("/me endpoint not found, skipping user data fetch.");
-          } else {
-            throw new Error('Failed to fetch user data');
-          }
+        if (userResponse.status === 404) {
+          console.warn("/me endpoint not found, skipping user data fetch.");
         } else {
-          const userData = await userResponse.json();
+          const userData = userResponse.data;
           console.log("User data fetched:", userData);
           setIsAdmin(userData.role === "admin");
         }
 
         // Proceed to fetch complaints
-        const complaintsResponse = await fetch('http://localhost:5000/complaints', {
+        const complaintsResponse = await axios.get('http://localhost:5000/complaints', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        if (!complaintsResponse.ok) {
+        if (complaintsResponse.status !== 200) {
           throw new Error('Failed to fetch complaints');
         }
 
-        const complaintsData = await complaintsResponse.json();
+        const complaintsData = complaintsResponse.data;
         console.log("Complaints fetched:", complaintsData);
         setComplaints(complaintsData);
       } catch (err) {
@@ -85,6 +82,11 @@ function ComplaintsPage() {
                 <Typography variant="h6">{complaint.title}</Typography>
                 <Typography>{complaint.description}</Typography>
                 <Typography color="text.secondary">Status: {complaint.status}</Typography>
+                {complaint.revealIdentity ? (
+                  <Typography color="text.secondary">Created By: {complaint.createdBy.name}</Typography>
+                ) : (
+                  <Typography color="text.secondary">Created By: Anonymous</Typography>
+                )}
               </CardContent>
             </Card>
           ))
