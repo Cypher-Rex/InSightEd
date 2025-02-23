@@ -41,6 +41,7 @@ app.use("/sponsorships", require("./routes/sponsorships"));
 app.use("/facility-requests", require("./routes/facility"));
 app.use("/uploads", require("./routes/upload"));
 app.use("/user", require("./routes/user")); // e.g., for profile, change password, etc.
+app.use('/cases', require('./routes/cheat'));
 
 // Other routes such as email sending can be similarly modularized into a dedicated controller and route.
 // For instance:

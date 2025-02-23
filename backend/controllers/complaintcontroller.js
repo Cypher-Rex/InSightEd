@@ -1,4 +1,4 @@
-const Complaint = require("../models/Complaint");
+const Complaint = require("../models/Complaint"); // Ensure correct import
 const User = require("../models/User");
 
 // Create Complaint
@@ -6,6 +6,10 @@ exports.createComplaint = async (req, res) => {
   const { title, description } = req.body;
 
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "Unauthorized: User ID missing" });
+    }
+
     const complaint = new Complaint({
       title,
       description,
@@ -32,8 +36,8 @@ exports.getAllComplaints = async (req, res) => {
 
 // Update Complaint Status (Admin Only)
 exports.updateComplaintStatus = async (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Unauthorized" });
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ error: "Unauthorized: Admin access required" });
   }
 
   const { status } = req.body;
@@ -54,8 +58,8 @@ exports.updateComplaintStatus = async (req, res) => {
 
 // Vote for Identity Reveal (Admin Only)
 exports.voteForReveal = async (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Unauthorized" });
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ error: "Unauthorized: Admin access required" });
   }
 
   const { vote } = req.body; // Expected values: "approve" or "reject"
@@ -66,22 +70,18 @@ exports.voteForReveal = async (req, res) => {
       return res.status(404).json({ error: "Complaint not found" });
     }
 
-    // Ensure reveal has been requested (if using a flag like revealRequested)
+    // Ensure reveal has been requested
     if (!complaint.revealRequested) {
       return res.status(400).json({ error: "Reveal not requested" });
     }
 
-    // Record vote
-    if (vote === "approve") {
-      if (!complaint.approveVotes.includes(req.user.id)) {
-        complaint.approveVotes.push(req.user.id);
-      }
-    } else if (vote === "reject") {
-      if (!complaint.rejectVotes.includes(req.user.id)) {
-        complaint.rejectVotes.push(req.user.id);
-      }
+    // Prevent duplicate votes
+    if (vote === "approve" && !complaint.approveVotes.includes(req.user.id)) {
+      complaint.approveVotes.push(req.user.id);
+    } else if (vote === "reject" && !complaint.rejectVotes.includes(req.user.id)) {
+      complaint.rejectVotes.push(req.user.id);
     } else {
-      return res.status(400).json({ error: "Invalid vote" });
+      return res.status(400).json({ error: "Invalid or duplicate vote" });
     }
 
     await complaint.save();

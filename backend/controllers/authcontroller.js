@@ -30,8 +30,34 @@ exports.register = async (req, res) => {
 };
 
 // Your original login function
+// exports.login = async (req, res) => {
+//   console.log("Login function called" , req.body , res.body);
+//   const { email, password , role } = req.body;
+
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+//     const payload = { id: user.id, role: user.role };
+//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+//     // New: Add refresh token
+//     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+//     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+
+//     res.json({ token  });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  console.log("Login function called", req.body);
+
+  const { email, password } = req.body; // Removed role from request body
 
   try {
     const user = await User.findOne({ email });
@@ -40,18 +66,21 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const payload = { id: user.id, role: user.role };
+    const payload = { id: user.id, role: user.role }; // Include role in payload
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // New: Add refresh token
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
 
-    res.json({ token });
+    // Send role along with the token in response
+    res.json({ token, role: user.role });
+
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Your original getProfile function
 exports.getProfile = async (req, res) => {

@@ -8,20 +8,45 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await fetch("http://localhost:5000/auth/login", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ email, password }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       localStorage.setItem("token", data.token);
+  //       localStorage.setItem("role", data.role); // Store user role
+  //       navigate("/home");
+  //     } else {
+  //       setError(data.error || "Login failed");
+  //     }
+  //   } catch (err) {
+  //     setError("Server error");
+  //   }
+  // };
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password  }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
+        // const role = data.role ?? "user"; // Use "user" as default if role is undefined
         localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role); // Store user role
+        localStorage.setItem("role", data.role);
         navigate("/home");
       } else {
         setError(data.error || "Login failed");
@@ -30,7 +55,7 @@ function Login() {
       setError("Server error");
     }
   };
-
+  
   return (
     <Container maxWidth="xs">
       <Box

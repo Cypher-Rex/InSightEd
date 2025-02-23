@@ -62,20 +62,25 @@ const SidebarIcon = styled(ListItemIcon)(({ theme }) => ({
 // Route Configuration
 const roleRoutes = {
   admin: [
-    { path: '/admin/complaints', label: 'Complaints', icon: <Report /> },
+    { path: '/admin', label: 'Complaints', icon: <Report /> },
     { path: '/admin/facilities', label: 'Facilities', icon: <Dashboard /> },
-    { path: '/admin/budget', label: 'Budget', icon: <Settings /> },
+    { path: "/admin-budget", label: 'Budget', icon: <Settings /> },
   ],
-  student: [
-    { path: '/student/complaints', label: 'File Complaint', icon: <Report /> },
-    { path: '/student/health', label: 'Health Services', icon: <MedicalServices /> },
-    { path: '/student/courses', label: 'Courses', icon: <School /> },
+  user: [
+    { path: '/complaints', label: 'File Complaint', icon: <Report /> },
+    { path: '/health', label: 'Health Services', icon: <MedicalServices /> },
+    { path: '/student', label: 'Courses', icon: <School /> },
   ],
   authority: [
-    { path: '/authority/exam', label: 'Exam Monitoring', icon: <AdminPanelSettings /> },
-    { path: '/authority/events', label: 'Event Management', icon: <Event /> },
-    { path: '/authority/feedback', label: 'Feedback', icon: <Feedback /> },
-  ]
+    { path: '/authority,', label: 'Cheating Case', icon: <gravel /> },
+  ],
+  invigilator: [
+    { path: '/invigilator', label: 'Cheating Case', icon: <gravel /> },
+  ],
+  boardmemb: [
+    { path: '/admin', label: 'Complaints', icon: <Event /> },
+  ],
+  
 };
 
 const commonRoutes = [
@@ -87,7 +92,7 @@ const commonRoutes = [
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userRole = localStorage.getItem("role") || "user"; // Fetch role from localStorage or default to 'student'
+  const userRole = localStorage.getItem("role"); // Fetch role from localStorage or default to 'user'
 
   const handleNavigation = (path) => {
     navigate(path);
