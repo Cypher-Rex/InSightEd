@@ -50,6 +50,11 @@ app.post(
   require("./controllers/uploadController").sendEmail
 );
 
+app.get("/api/symptoms", async (req, res) => {
+  const symptoms = await Symptom.find();
+  res.json(symptoms);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

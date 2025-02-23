@@ -1,0 +1,262 @@
+:root {
+    --primary: #2962ff;
+    --primary-hover: #1565c0;
+    --background: #f8f9fa;
+    --text: #2d3436;
+    --border: #e0e0e0;
+    --success: #00c853;
+    --error: #d32f2f;
+    --radius: 8px;
+    --shadow: 0 8px 30px rgba(0,0,0,0.12);
+  }
+  
+  /* Base Container Styles */
+  .container {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  
+  /* Header Section */
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .header h1 {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .selectedDate {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  /* Facility Selection */
+  .facilitySelection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .facilityCard {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+  }
+  
+  .facilityCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  
+  .facilityCard input[type="radio"] {
+    display: none;
+  }
+  
+  .selectedFacility {
+    border-color: var(--primary);
+    background: #f8fbff;
+  }
+  
+  .facilityContent h3 {
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .facilityContent p {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  /* Time Slots Grid */
+  .slotsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .slotButton {
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  
+  .slotButton:hover:not(.disabledSlot) {
+    border-color: var(--primary);
+  }
+  
+  .selectedSlot {
+    border-color: var(--primary);
+    background: #f8fbff;
+  }
+  
+  .disabledSlot {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--background);
+  }
+  
+  .slotTime {
+    display: block;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  
+  .slotAvailability {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  /* Form Sections */
+  .formSection {
+    margin: 2rem 0;
+  }
+  
+  .inputGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .inputLabel {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+  
+  .participantInput,
+  .symptomsInput {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .participantInput:focus,
+  .symptomsInput:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  .symptomsInput {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  /* Submit Button */
+  .submitButton {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .submitButton:hover {
+    background: var(--primary-hover);
+  }
+  
+  .submitButton:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+  }
+  
+  /* Confirmation Overlay */
+  .confirmationOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .confirmationBox {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: slideIn 0.3s ease;
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .confirmationDetails {
+    text-align: left;
+    margin: 2rem 0;
+    background: var(--background);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+  }
+  
+  .detailRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .detailRow:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  .detailRow span {
+    color: #666;
+  }
+  
+  .detailRow strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  
+  .newBookingButton {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s ease;
+  }
+  
+  .newBookingButton:hover {
+    background: var(--primary-hover);
+  }
