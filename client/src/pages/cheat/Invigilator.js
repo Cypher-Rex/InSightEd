@@ -17,7 +17,7 @@ const Invigilator = () => {
     const newCase = { studentName, examName, description, invigilatorName, action: null };
 
     try {
-      await axios.post("http://localhost:5000/api/cases", newCase);
+      await axios.post("http://localhost:5000/cases", newCase);
       alert("Case submitted successfully!");
       setStudentName(""); setExamName(""); setDescription(""); setInvigilatorName("");
     } catch (err) {

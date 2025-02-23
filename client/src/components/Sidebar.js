@@ -70,6 +70,7 @@ const roleRoutes = {
     { path: '/complaints', label: 'File Complaint', icon: <Report /> },
     { path: '/health', label: 'Health Services', icon: <MedicalServices /> },
     { path: '/student', label: 'Courses', icon: <School /> },
+    { path: '/student-dashboard', label: 'Event/Sponsors', icon: <School /> }
   ],
   authority: [
     { path: '/authority,', label: 'Cheating Case', icon: <gravel /> },

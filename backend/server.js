@@ -46,13 +46,12 @@ app.use("/complaints", require("./routes/complaints")); // Corrected line
 // app.use("/budgets", require("./routes/budgets"));
 // Use the budget routes
 app.use('/api', require("./routes/budgets")); // Mount the budget routes under /api
-app.use("/complaints", require("./routes/complaints"));
 app.use("/events", require("./routes/events"));
 app.use("/sponsorships", require("./routes/sponsorships"));
 app.use("/facility-requests", require("./routes/facility"));
 app.use("/uploads", require("./routes/upload"));
 app.use("/user", require("./routes/user")); // e.g., for profile, change password, etc.
-app.use('/cases', require('./routes/cheat'));
+app.use('/', require('./routes/cheat'));
 app.use("/user", require("./routes/user")); 
 app.use('/applications', require("./routes/applications"));// e.g., for profile, change password, etc.
 
